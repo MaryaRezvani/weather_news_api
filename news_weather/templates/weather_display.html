@@ -1,0 +1,123 @@
+<!-- templates/weather_display.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>داده‌های آب و هوا ☁️</title>
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">داده‌های آب و هوا ☁️🌡️</h2>
+
+    <!-- نمودار دما -->
+    <div class="row mb-4">
+        <div class="col-lg-8 offset-lg-2">
+            <canvas id="temperatureChart"></canvas>
+        </div>
+    </div>
+
+    <!-- جدول داده‌ها با ایموجی‌های آب و هوا -->
+    {% if weather_data %}
+    <table class="table table-bordered table-hover text-center">
+        <thead class="thead-dark">
+            <tr>
+                <th>شهر</th>
+                <th>دما (°C) 🌡️</th>
+                <th>سرعت باد (km/h) 🌬️</th>
+                <th>وضعیت آب و هوا</th>
+                <th>تاریخ و زمان</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for weather in weather_data %}
+            <tr>
+                <td>{{ weather.city }}</td>
+                <td>{{ weather.temperature }}</td>
+                <td>{{ weather.windspeed }}</td>
+                <td>
+                    {% if weather.temperature > 30 %}
+                        ☀️ آفتابی
+                    {% elif weather.temperature > 20 %}
+                        ⛅ نیمه ابری
+                    {% elif weather.temperature > 10 %}
+                        ☁️ ابری
+                    {% else %}
+                        🌧️ بارانی
+                    {% endif %}
+                </td>
+                <td>{{ weather.timestamp }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-warning text-center">هیچ داده‌ای برای نمایش وجود ندارد.</div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // داده‌های دما و تاریخ برای رسم نمودار
+        const temperatures = [
+            {% for weather in weather_data %}
+                {{ weather.temperature }},
+            {% endfor %}
+        ];
+        const timestamps = [
+            {% for weather in weather_data %}
+                "{{ weather.timestamp }}",
+            {% endfor %}
+        ];
+
+        // اطمینان از پر بودن داده‌ها قبل از رسم نمودار
+        if (temperatures.length && timestamps.length) {
+            const ctx = document.getElementById('temperatureChart').getContext('2d');
+            const temperatureChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: timestamps,
+                    datasets: [{
+                        label: 'دما (°C) 🌡️',
+                        data: temperatures,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 3,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'دما (°C) 🌡️',
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'تاریخ و زمان',
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

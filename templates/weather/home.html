@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>وضعیت آب و هوا</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#state-select').change(function () {
+                var selectedState = $(this).val();
+                var cities = {
+                    {% for state, cities in regions.items %}
+                    '{{ state }}': {{ cities|safe }},
+                    {% endfor %}
+                };
+                var citySelect = $('#city-select');
+                citySelect.empty(); // خالی کردن لیست شهرها
+                citySelect.append('<option value="">انتخاب شهر</option>'); // افزودن گزینه پیش‌فرض
+
+                if (selectedState in cities) {
+                    $.each(cities[selectedState], function (index, value) {
+                        citySelect.append('<option value="' + value + '">' + value + '</option>');
+                    });
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container mt-5">
+    <h1>وضعیت آب و هوای شهر</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">دریافت وضعیت آب و هوا</button>
+    </form>
+
+    {% if weather_data %}
+        <h2>آب و هوای {{ weather_data.city }}</h2>
+        <p>دما: {{ weather_data.temperature }}°C</p>
+        <p>سرعت باد: {{ weather_data.windspeed }} m/s</p>
+
+        <canvas id="temperatureChart"></canvas>
+        <script>
+            var ctx = document.getElementById('temperatureChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['اکنون'],
+                    datasets: [{
+                        label: 'دمای {{ weather_data.city }}',
+                        data: [{{ weather_data.temperature }}],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'درجه سلسیوس'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'زمان'
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    {% endif %}
+</div>
+</body>
+</html>
