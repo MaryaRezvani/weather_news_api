@@ -54,14 +54,15 @@ class WeatherDataAPI(APIView):
                     windspeed=windspeed,
                 )
 
-                # سریالایز کردن داده و برگرداندن پاسخ
-                serializer = WeatherSerializer(weather)
-                return Response(serializer.data)
+                # گرفتن تمام داده‌های آب و هوا برای نمایش در صفحه
+                weather_data_all = Weather.objects.filter(city=city).order_by('-timestamp')
+
+                return render(request, 'weather_display.html', {'weather_data': weather_data_all, 'selected_city': city})
 
             else:
-                return Response({'error': 'Weather data not available'}, status=404)
+                return render(request, 'weather_display.html', {'error': 'Weather data not available'})
 
-        return Response({'error': 'City not found'}, status=404)
+        return render(request, 'weather_display.html', {'error': 'City not found'})
 
 
 

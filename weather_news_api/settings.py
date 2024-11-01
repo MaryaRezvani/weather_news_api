@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'rest_framework',
-    "news_weather",
+    'channels',
+    'news_weather',
 ]
 
 MIDDLEWARE = [
@@ -69,7 +70,13 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "weather_news_api.wsgi.application"
+# WSGI_APPLICATION = "weather_news_api.wsgi.application"
+ASGI_APPLICATION = 'weather_news_api.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 
 # Database
