@@ -3,81 +3,54 @@
 <html lang="fa">
 <head>
     <meta charset="UTF-8">
-    <title>وضعیت آب و هوا</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#state-select').change(function () {
-                var selectedState = $(this).val();
-                var cities = {
-                    {% for state, cities in regions.items %}
-                    '{{ state }}': {{ cities|safe }},
-                    {% endfor %}
-                };
-                var citySelect = $('#city-select');
-                citySelect.empty(); // خالی کردن لیست شهرها
-                citySelect.append('<option value="">انتخاب شهر</option>'); // افزودن گزینه پیش‌فرض
-
-                if (selectedState in cities) {
-                    $.each(cities[selectedState], function (index, value) {
-                        citySelect.append('<option value="' + value + '">' + value + '</option>');
-                    });
-                }
-            });
-        });
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>آب و هوای تهران</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/weather.css' %}" rel="stylesheet">
 </head>
 <body>
-<div class="container mt-5">
-    <h1>وضعیت آب و هوای شهر</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">دریافت وضعیت آب و هوا</button>
-    </form>
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="weather-card text-center p-4">
+            <h2 class="mb-4">آب و هوای تهران</h2>
+            <div class="weather-icon mb-3">☀️</div>
+            <div class="temperature mb-3" id="temperature">-- °C</div>
+            <h5 id="windspeed">سرعت باد: -- km/h</h5>
+            <h5 id="weather-status">وضعیت: --</h5>
+        </div>
+    </div>
 
-    {% if weather_data %}
-        <h2>آب و هوای {{ weather_data.city }}</h2>
-        <p>دما: {{ weather_data.temperature }}°C</p>
-        <p>سرعت باد: {{ weather_data.windspeed }} m/s</p>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const socket = new WebSocket('ws://localhost:8000/ws/weather/');
 
-        <canvas id="temperatureChart"></canvas>
-        <script>
-            var ctx = document.getElementById('temperatureChart').getContext('2d');
-            var chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['اکنون'],
-                    datasets: [{
-                        label: 'دمای {{ weather_data.city }}',
-                        data: [{{ weather_data.temperature }}],
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            title: {
-                                display: true,
-                                text: 'درجه سلسیوس'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'زمان'
-                            }
-                        }
-                    }
+            socket.onopen = function() {
+                socket.send(JSON.stringify({ 'city': 'Tehran' }));
+            };
+
+            socket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                if (!data.error) {
+                    document.getElementById("temperature").textContent = data.temperature + " °C";
+                    document.getElementById("windspeed").textContent = "سرعت باد: " + data.windspeed + " km/h";
+                    document.getElementById("weather-status").textContent = getWeatherStatus(data.temperature);
+                    document.querySelector(".weather-icon").textContent = getWeatherEmoji(data.temperature);
                 }
-            });
-        </script>
-    {% endif %}
-</div>
+            };
+
+            function getWeatherStatus(temp) {
+                if (temp > 30) return "آفتابی";
+                else if (temp > 20) return "نیمه ابری";
+                else if (temp > 10) return "ابری";
+                else return "بارانی";
+            }
+
+            function getWeatherEmoji(temp) {
+                if (temp > 30) return "☀️";
+                else if (temp > 20) return "⛅";
+                else if (temp > 10) return "☁️";
+                else return "🌧️";
+            }
+        });
+    </script>
 </body>
 </html>

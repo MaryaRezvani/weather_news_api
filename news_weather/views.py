@@ -1,4 +1,3 @@
-
 from django.shortcuts import render, redirect
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
@@ -6,21 +5,42 @@ from rest_framework.response import Response
 from .forms import CityForm
 from .serializers import WeatherSerializer
 from .models import Weather
-from django.views.generic import View,ListView
+from django.views.generic import View, ListView
 from django.views.generic.edit import FormView
 from .cities import cities
 from .regions import regions
 import requests
 
-
-
 class WeatherFormView(FormView):
-    template_name = 'weather_form.html'
+    template_name = 'home.html'
     form_class = CityForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['regions'] = regions  # افزودن لیست استان‌ها به کانتکست
+        context['regions'] = regions
+        
+        tehran_coordinates = cities.get("تهران")
+        if tehran_coordinates:
+            lat = tehran_coordinates.get('latitude')
+            lon = tehran_coordinates.get('longitude')
+            api_url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
+            response = requests.get(api_url)
+
+            if response.status_code == 200:
+                weather_data = response.json()
+
+                if 'current_weather' in weather_data:
+                    context['tehran_weather'] = {
+                        'temperature': weather_data['current_weather'].get('temperature'),
+                        'windspeed': weather_data['current_weather'].get('windspeed')
+                    }
+                else:
+                    context['tehran_weather'] = None
+            else:
+                context['tehran_weather'] = None
+        else:
+            context['tehran_weather'] = None
+        
         return context
 
 class WeatherDataAPI(APIView):
@@ -30,7 +50,6 @@ class WeatherDataAPI(APIView):
         state = request.data.get('state')
         city = request.data.get('city')
 
-        # چک کردن وجود شهر در دیکشنری cities
         coordinates = cities.get(city)
         if coordinates:
             lat = coordinates.get('latitude')
@@ -42,19 +61,16 @@ class WeatherDataAPI(APIView):
             response = requests.get(api_url)
             weather_data = response.json()
 
-            # چک کردن وجود داده‌های آب و هوا
             if 'current_weather' in weather_data:
                 temperature = weather_data['current_weather'].get('temperature')
                 windspeed = weather_data['current_weather'].get('windspeed')
 
-                # ذخیره داده در دیتابیس
                 weather = Weather.objects.create(
                     city=city,
                     temperature=temperature,
                     windspeed=windspeed,
                 )
 
-                # گرفتن تمام داده‌های آب و هوا برای نمایش در صفحه
                 weather_data_all = Weather.objects.filter(city=city).order_by('-timestamp')
 
                 return render(request, 'weather_display.html', {'weather_data': weather_data_all, 'selected_city': city})
@@ -64,21 +80,14 @@ class WeatherDataAPI(APIView):
 
         return render(request, 'weather_display.html', {'error': 'City not found'})
 
-
-
 class DisplayWeatherView(View):
     def get(self, request):
-        city = request.GET.get('city')  # دریافت نام شهر از پارامترهای کوئری
+        city = request.GET.get('city')
         if city:
             weather_data = Weather.objects.filter(city=city).order_by('-timestamp')
         else:
             weather_data = Weather.objects.all().order_by('-timestamp')
 
         return render(request, 'weather_display.html', {'weather_data': weather_data, 'selected_city': city})
-
-
-
-
-
 
 

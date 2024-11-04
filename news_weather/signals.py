@@ -7,8 +7,7 @@ import logging
 import hashlib
 
 def get_city_hash(city_name):
-    return hashlib.md5(city_name.encode('utf-8')).hexdigest()  # تولید hash
-
+    return hashlib.md5(city_name.encode('utf-8')).hexdigest()
 logger = logging.getLogger(__name__)
 
 @receiver(post_save, sender=Weather)

@@ -20,5 +20,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('news_weather.urls')),  # اتصال URLهای اپلیکیشن weather
+    path('', include('news_weather.urls')),
 ]

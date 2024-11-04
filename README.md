@@ -5,29 +5,6 @@ This project also utilizes Django REST Framework (DRF) to create RESTful APIs th
 ## Using Django Channels
 This project utilizes Django Channels to handle WebSocket connections. Django Channels extends Django to handle asynchronous protocols like WebSockets, allowing for real-time communication between the server and clients.
 
-## Features
-- Live temperature chart display
-- Weather data table showing city, temperature, wind speed, weather status, and timestamp
-- Automatic data updates every minute
-- Responsive design using Bootstrap
-
-
-## Demo
-
-Here are some screenshots demonstrating the functionality of the weather application:
-
-<div style="display: flex; justify-content: center;">
-    <div style="margin-right: 20px;">
-        <h3>Weather Form</h3>
-        <img src="docs/weather-form.png" width="600" height="400" />
-    </div>
-    <div>
-        <h3>Weather Data</h3>
-        <img src="docs/weather.png" width="600" height="400" />
-    </div>
-</div>
-
-
 ## Installation
 1. **Clone the repository**
 
@@ -46,8 +23,30 @@ Here are some screenshots demonstrating the functionality of the weather applica
 ```
 4. **Run the server**
 ```bash
-    python manage.py runserver
+    daphne -p 8000 weather_news_api.asgi:application
 ```
+
+## Demo
+
+Here are some screenshots demonstrating the functionality of the weather application:
+
+<div style="display: flex; justify-content: center;">
+    <div style="margin-right: 20px;">
+        <h3>Weather Form</h3>
+        <img src="docs/weather-form.png" width="520" height="250"/>
+    </div>
+    <div>
+        <h3>Weather Data</h3>
+        <img src="docs/weather.png" width="520" height="250" />
+    </div>
+</div>
+
+## Features
+- Live temperature chart display
+- Weather data table showing city, temperature, wind speed, weather status, and timestamp
+- Automatic data updates every minute
+- Responsive design using Bootstrap
+
 
 
 

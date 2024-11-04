@@ -59,7 +59,7 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded"), function () {
         const temperatures = [
             {% for weather in weather_data %}
                 {{ weather.temperature }},
@@ -139,16 +139,13 @@
 
                 tableBody.prepend(newRow);
                 
-                // به‌روزرسانی نمودار
                 temperatureChart.data.labels.unshift(data.message.timestamp);
                 temperatureChart.data.datasets[0].data.unshift(data.message.temperature);
 
-                // محدود کردن تعداد سطرها به 10
                 if (tableBody.rows.length > 10) {
                     tableBody.removeChild(tableBody.lastChild);
                 }
 
-                // محدود کردن داده‌های نمودار به 10
                 if (temperatureChart.data.labels.length > 10) {
                     temperatureChart.data.labels.pop();
                     temperatureChart.data.datasets[0].data.pop();
@@ -174,8 +171,7 @@
                 }
             };
             socket.send(JSON.stringify(dataToSend));
-        }, 60000); // 60000 میلی‌ثانیه برابر با 1 دقیقه
-    });
+        }, 60000); 
 </script>
 
 </body>

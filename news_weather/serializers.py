@@ -8,5 +8,5 @@ class WeatherSerializer(serializers.Serializer):
     timestamp = serializers.DateTimeField()
 
     def create(self, validated_data):
-        return Weather.objects.create(**validated_data)  # ایجاد یک شیء جدید از مدل Weather
-
+        return Weather.objects.create(**validated_data)
+    

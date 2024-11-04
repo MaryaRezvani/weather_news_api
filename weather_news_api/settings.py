@@ -50,6 +50,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = "weather_news_api.urls"
@@ -161,10 +162,7 @@ USE_TZ = True
 
 #static files
 STATIC_URL = 'static/'
-STATICFILES_DIR = [
-    BASE_DIR / 'static'
-]
-
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 #media files
 MEDIA_URL = '/media/'

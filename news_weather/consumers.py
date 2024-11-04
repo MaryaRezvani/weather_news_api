@@ -2,9 +2,9 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 import hashlib
 
+
 def get_city_hash(city_name):
     return hashlib.md5(city_name.encode('utf-8')).hexdigest()
-
 class WeatherConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.city_name = self.scope['url_route']['kwargs']['city']
@@ -29,7 +29,6 @@ class WeatherConsumer(AsyncWebsocketConsumer):
         if 'message' in text_data_json:
             message = text_data_json['message']
 
-            # بررسی وجود کلیدها
             if 'temperature' in message and 'windspeed' in message:
                 new_temperature = message['temperature']
                 new_windspeed = message['windspeed']
@@ -37,13 +36,13 @@ class WeatherConsumer(AsyncWebsocketConsumer):
 
                 await self.channel_layer.group_send(
                     self.room_group_name,
-                    {       
+                    {
                         'type': 'weather_update',
                         'message': {
                             'temperature': new_temperature,
                             'windspeed': new_windspeed,
                             'timestamp': current_timestamp
-                        }           
+                        }
                     }
                 )
             else:
@@ -59,7 +58,7 @@ class WeatherConsumer(AsyncWebsocketConsumer):
     async def weather_update(self, event):
         message = event['message']
         await self.send(text_data=json.dumps({
-            'message': {  # مطمئن شوید که داده‌ها به درستی در یک کلید message قرار گرفته‌اند
+            'message': {
                 'city': self.city_name,
                 'temperature': message['temperature'],
                 'windspeed': message['windspeed'],

@@ -16,7 +16,7 @@ from channels.auth import AuthMiddlewareStack
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'weather_news_api.settings')
 django.setup()
 
-from news_weather import routing  # Import بعد از django.setup()
+from news_weather import routing
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
