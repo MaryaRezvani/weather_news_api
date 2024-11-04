@@ -59,7 +59,7 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded"), function () {
+    document.addEventListener("DOMContentLoaded", function () {
         const temperatures = [
             {% for weather in weather_data %}
                 {{ weather.temperature }},
@@ -171,7 +171,8 @@
                 }
             };
             socket.send(JSON.stringify(dataToSend));
-        }, 60000); 
+        }, 60000);
+    });
 </script>
 
 </body>

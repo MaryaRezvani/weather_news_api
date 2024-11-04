@@ -34,7 +34,7 @@
         </div>
 
         <div class="container mt-5" style="max-width: 500px; text-align: right;">
-            <form method="post" action="{% url 'weather_data_api' %}" style="border-radius: 15px; padding: 20px; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <form method="post" action="{% url 'weather_data_api' %}" >
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="state">انتخاب استان:</label>
