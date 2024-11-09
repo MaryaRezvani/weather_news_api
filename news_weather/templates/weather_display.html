@@ -142,11 +142,11 @@
                 temperatureChart.data.labels.unshift(data.message.timestamp);
                 temperatureChart.data.datasets[0].data.unshift(data.message.temperature);
 
-                if (tableBody.rows.length > 10) {
+                if (tableBody.rows.length > 5) {
                     tableBody.removeChild(tableBody.lastChild);
                 }
 
-                if (temperatureChart.data.labels.length > 10) {
+                if (temperatureChart.data.labels.length > 5) {
                     temperatureChart.data.labels.pop();
                     temperatureChart.data.datasets[0].data.pop();
                 }

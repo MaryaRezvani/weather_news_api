@@ -1,9 +1,10 @@
-from django.urls import path
+from django.urls import include, path
 from . import views
 
 urlpatterns = [
     path('', views.WeatherFormView.as_view(), name='weather_form'),
-    path('api/weather-data/', views.WeatherDataAPI.as_view(), name='weather_data_api'),
+    path('api/v1/', include('news_weather.api.v1.urls')),
+
     path('weather-display/', views.DisplayWeatherView.as_view(), name='weather_display'),
 ]
 
